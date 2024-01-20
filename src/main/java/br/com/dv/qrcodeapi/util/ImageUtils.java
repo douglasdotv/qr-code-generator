@@ -6,7 +6,6 @@ import br.com.dv.qrcodeapi.exception.InvalidImageFormatException;
 import org.springframework.http.MediaType;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,13 +26,6 @@ public final class ImageUtils {
         } catch (IOException e) {
             throw new ImageProcessingException(e);
         }
-    }
-
-    public static Graphics2D configureGraphics(BufferedImage image) {
-        Graphics2D graphics = image.createGraphics();
-        graphics.setColor(Color.WHITE);
-        graphics.fillRect(image.getMinX(), image.getMinY(), image.getWidth(), image.getHeight());
-        return graphics;
     }
 
     public static MediaType getMediaTypeForImageFormat(String format) {
