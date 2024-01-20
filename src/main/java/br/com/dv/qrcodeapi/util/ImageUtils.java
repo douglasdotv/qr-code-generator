@@ -1,12 +1,16 @@
 package br.com.dv.qrcodeapi.util;
 
+import br.com.dv.qrcodeapi.enums.ImageFormat;
 import br.com.dv.qrcodeapi.exception.ImageProcessingException;
+import br.com.dv.qrcodeapi.exception.InvalidImageFormatException;
+import org.springframework.http.MediaType;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public final class ImageUtils {
 
@@ -30,6 +34,14 @@ public final class ImageUtils {
         graphics.setColor(Color.WHITE);
         graphics.fillRect(image.getMinX(), image.getMinY(), image.getWidth(), image.getHeight());
         return graphics;
+    }
+
+    public static MediaType getMediaTypeForImageFormat(String format) {
+        return Arrays.stream(ImageFormat.values())
+                .filter(f -> f.name().equalsIgnoreCase(format))
+                .findFirst()
+                .map(ImageFormat::getMediaType)
+                .orElseThrow(InvalidImageFormatException::new);
     }
 
 }
