@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 @RequestMapping("/api/qrcode")
 @RestController
 public class QRCodeController {
@@ -20,13 +23,24 @@ public class QRCodeController {
     }
 
     @GetMapping
-    public ResponseEntity<byte[]> generateQRCode(
+    public ResponseEntity<byte[]> generateQrCode(
             @RequestParam(name = "contents") String content,
             @RequestParam(required = false, defaultValue = "250") int size,
             @RequestParam(required = false, defaultValue = "L") String correction,
-            @RequestParam(name = "type", required = false, defaultValue = "png") String format
+            @RequestParam(name = "type", required = false, defaultValue = "png") String format,
+            @RequestParam(required = false, defaultValue = "#000000") String fcolor,
+            @RequestParam(required = false, defaultValue = "#FFFFFF") String bcolor,
+            @RequestParam(required = false, defaultValue = "4") int margin
     ) {
-        ImageResponse response = qrCodeService.generateQRCode(content, size, correction, format);
+        ImageResponse response = qrCodeService.generateQRCode(
+                content,
+                size,
+                correction,
+                format,
+                URLDecoder.decode(fcolor, StandardCharsets.UTF_8),
+                URLDecoder.decode(bcolor, StandardCharsets.UTF_8),
+                margin
+        );
 
         return ResponseEntity
                 .status(HttpStatus.OK)

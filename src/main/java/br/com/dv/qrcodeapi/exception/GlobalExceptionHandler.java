@@ -44,6 +44,16 @@ public class GlobalExceptionHandler {
         return getResponseEntity(e, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidColorException.class)
+    public ResponseEntity<ApiError> handleInvalidColorException(InvalidColorException e) {
+        return getResponseEntity(e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidMarginException.class)
+    public ResponseEntity<ApiError> handleInvalidMarginException(InvalidMarginException e) {
+        return getResponseEntity(e, HttpStatus.BAD_REQUEST);
+    }
+
     private ResponseEntity<ApiError> getResponseEntity(Exception e, HttpStatus status) {
         ApiError error = new ApiError(e.getMessage());
         return ResponseEntity.status(status).body(error);
