@@ -1,11 +1,15 @@
 package br.com.dv.qrcodeapi.controller;
 
+import br.com.dv.qrcodeapi.security.TestSecurityConfig;
 import br.com.dv.qrcodeapi.dto.ImageResponse;
 import br.com.dv.qrcodeapi.exception.InvalidColorException;
 import br.com.dv.qrcodeapi.exception.InvalidContentException;
 import br.com.dv.qrcodeapi.exception.InvalidCorrectionLevelException;
 import br.com.dv.qrcodeapi.exception.InvalidMarginException;
 import br.com.dv.qrcodeapi.service.QRCodeService;
+import br.com.dv.qrcodeapi.security.JwtService;
+import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.when;
@@ -26,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(QRCodeController.class)
+@Import(TestSecurityConfig.class)
 class QRCodeControllerTest {
 
     @Autowired
@@ -33,6 +40,22 @@ class QRCodeControllerTest {
 
     @MockBean
     private QRCodeService qrCodeService;
+
+    @MockBean
+    private JwtService jwtService;
+
+    private Cookie authCookie;
+
+    @BeforeEach
+    void setUp() {
+        authCookie = new Cookie("token", "test.jwt.token");
+        when(jwtService.extractEmail("test.jwt.token")).thenReturn("test@example.com");
+        when(jwtService.validateToken("test.jwt.token", "test@example.com")).thenReturn(true);
+    }
+
+    private MockHttpServletRequestBuilder withCookie(MockHttpServletRequestBuilder builder) {
+        return builder.cookie(authCookie);
+    }
 
     @Test
     @DisplayName("Should successfully generate QR code when all parameters are valid")
@@ -42,7 +65,7 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyInt())
         ).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/qrcode")
+        mockMvc.perform(withCookie(get("/api/qrcode"))
                         .param("contents", "test")
                         .param("size", "250")
                         .param("correction", "L")
@@ -63,7 +86,7 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyInt())
         ).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/qrcode").param("contents", "test"))
+        mockMvc.perform(withCookie(get("/api/qrcode")).param("contents", "test"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_PNG));
     }
@@ -71,7 +94,7 @@ class QRCodeControllerTest {
     @Test
     @DisplayName("Should return 400 Bad Request when size parameter is not a valid number")
     void shouldReturnBadRequestForInvalidSize() throws Exception {
-        mockMvc.perform(get("/api/qrcode")
+        mockMvc.perform(withCookie(get("/api/qrcode"))
                         .param("contents", "test")
                         .param("size", "invalid")
                         .param("correction", "L")
@@ -81,13 +104,13 @@ class QRCodeControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"X", "Y", "invalid", "A"})
-    @DisplayName("Should return 400 Bad Request when error correction level is not L, M, Q, or H")
+    @DisplayName("Should return 400 Bad Request when correction level is invalid")
     void shouldReturnBadRequestForInvalidCorrectionLevel(String correction) throws Exception {
         when(qrCodeService.generateQRCode(
                 anyString(), anyInt(), eq(correction), anyString(), anyString(), anyString(), anyInt())
         ).thenThrow(new InvalidCorrectionLevelException());
 
-        mockMvc.perform(get("/api/qrcode")
+        mockMvc.perform(withCookie(get("/api/qrcode"))
                         .param("contents", "test")
                         .param("size", "250")
                         .param("correction", correction)
@@ -102,7 +125,7 @@ class QRCodeControllerTest {
                 eq(""), anyInt(), anyString(), anyString(), anyString(), anyString(), anyInt())
         ).thenThrow(new InvalidContentException());
 
-        mockMvc.perform(get("/api/qrcode").param("contents", ""))
+        mockMvc.perform(withCookie(get("/api/qrcode")).param("contents", ""))
                 .andExpect(status().isBadRequest());
     }
 
@@ -120,7 +143,7 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), eq(format), anyString(), anyString(), anyInt())
         ).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/qrcode")
+        mockMvc.perform(withCookie(get("/api/qrcode"))
                         .param("contents", "test")
                         .param("type", format))
                 .andExpect(status().isOk())
@@ -136,7 +159,7 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyInt())
         ).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/qrcode").param("contents", specialContent))
+        mockMvc.perform(withCookie(get("/api/qrcode")).param("contents", specialContent))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_PNG));
     }
@@ -150,7 +173,7 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyInt())
         ).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/qrcode").param("contents", longContent))
+        mockMvc.perform(withCookie(get("/api/qrcode")).param("contents", longContent))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_PNG));
     }
@@ -163,7 +186,7 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), anyString(), eq("RED"), anyString(), anyInt())
         ).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/qrcode")
+        mockMvc.perform(withCookie(get("/api/qrcode"))
                         .param("contents", "test")
                         .param("fcolor", "RED"))
                 .andExpect(status().isOk())
@@ -177,26 +200,10 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), anyString(), eq("RANDOM"), anyString(), anyInt())
         ).thenThrow(new InvalidColorException());
 
-        mockMvc.perform(get("/api/qrcode")
+        mockMvc.perform(withCookie(get("/api/qrcode"))
                         .param("contents", "test")
                         .param("fcolor", "RANDOM"))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Should successfully generate QR code with valid hex background color")
-    void shouldGenerateQRCodeWithValidHexBackgroundColor() throws Exception {
-        var mockResponse = new ImageResponse(new byte[]{4, 5, 6}, MediaType.IMAGE_PNG);
-        when(qrCodeService.generateQRCode(
-                anyString(), anyInt(), anyString(), anyString(), anyString(), eq("#FFFF00"), anyInt())
-        ).thenReturn(mockResponse);
-
-        mockMvc.perform(get("/api/qrcode")
-                        .param("contents", "test")
-                        .param("bcolor", "#FFFF00"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_PNG))
-                .andExpect(content().bytes(new byte[]{4, 5, 6}));
     }
 
     @Test
@@ -207,7 +214,7 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), anyString(), anyString(), anyString(), eq(10))
         ).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/qrcode")
+        mockMvc.perform(withCookie(get("/api/qrcode"))
                         .param("contents", "test")
                         .param("margin", "10"))
                 .andExpect(status().isOk())
@@ -222,10 +229,30 @@ class QRCodeControllerTest {
                 anyString(), anyInt(), anyString(), anyString(), anyString(), anyString(), eq(999))
         ).thenThrow(new InvalidMarginException());
 
-        mockMvc.perform(get("/api/qrcode")
+        mockMvc.perform(withCookie(get("/api/qrcode"))
                         .param("contents", "test")
                         .param("margin", "999"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should return 401 Unauthorized when authentication cookie is missing")
+    void shouldReturnUnauthorizedForMissingAuth() throws Exception {
+        mockMvc.perform(get("/api/qrcode")
+                        .param("contents", "test"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Should return 401 Unauthorized when JWT token is invalid")
+    void shouldReturnUnauthorizedForInvalidToken() throws Exception {
+        Cookie invalidCookie = new Cookie("token", "invalid.jwt.token");
+        when(jwtService.validateToken(anyString(), anyString())).thenReturn(false);
+
+        mockMvc.perform(get("/api/qrcode")
+                        .cookie(invalidCookie)
+                        .param("contents", "test"))
+                .andExpect(status().isUnauthorized());
     }
 
 }

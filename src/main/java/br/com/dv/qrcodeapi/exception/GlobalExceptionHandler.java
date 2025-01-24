@@ -3,8 +3,14 @@ package br.com.dv.qrcodeapi.exception;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,6 +22,26 @@ public class GlobalExceptionHandler {
                 e.getValue(),
                 e.getPropertyName()
         );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError(errorMessage));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(", "));
+
+        if (errorMessage.isEmpty()) {
+            errorMessage = "Validation error";
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError(errorMessage));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        String errorMessage = "Invalid request body: " + e.getMostSpecificCause().getMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError(errorMessage));
     }
 
@@ -52,6 +78,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidMarginException.class)
     public ResponseEntity<ApiError> handleInvalidMarginException(InvalidMarginException e) {
         return getResponseEntity(e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleEmailAlreadyExistsException(EmailAlreadyExistsException e) {
+        return getResponseEntity(e, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiError> handleInvalidCredentialsException(InvalidCredentialsException e) {
+        return getResponseEntity(e, HttpStatus.UNAUTHORIZED);
     }
 
     private ResponseEntity<ApiError> getResponseEntity(Exception e, HttpStatus status) {
