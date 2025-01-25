@@ -1,7 +1,9 @@
 package br.com.dv.qrcodeapi.enums;
 
+import lombok.Getter;
 import org.springframework.http.MediaType;
 
+@Getter
 public enum ImageFormat {
 
     PNG(MediaType.IMAGE_PNG),
@@ -12,10 +14,6 @@ public enum ImageFormat {
 
     ImageFormat(MediaType mediaType) {
         this.mediaType = mediaType;
-    }
-
-    public MediaType getMediaType() {
-        return this.mediaType;
     }
 
 }

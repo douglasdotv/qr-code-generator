@@ -1,5 +1,8 @@
 package br.com.dv.qrcodeapi.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Color {
 
     BLACK("#000000"),
@@ -15,10 +18,6 @@ public enum Color {
 
     Color(String hexCode) {
         this.hexCode = hexCode;
-    }
-
-    public String getHexCode() {
-        return this.hexCode;
     }
 
 }
