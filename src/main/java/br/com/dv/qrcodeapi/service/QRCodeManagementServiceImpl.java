@@ -63,7 +63,7 @@ public class QRCodeManagementServiceImpl implements QRCodeManagementService {
     public QRCodeResponse findById(UUID id) {
         AppUser currentUser = getCurrentUser();
         QRCode qrCode = qrCodeRepository.findByOwnerIdAndId(currentUser.getId(), id)
-                .orElseThrow(QRCodeNotFoundException::new);
+                .orElseThrow(() -> new QRCodeNotFoundException(id));
         return qrCodeMapper.toResponse(qrCode);
     }
 
@@ -72,7 +72,7 @@ public class QRCodeManagementServiceImpl implements QRCodeManagementService {
     public QRCodeResponse update(UUID id, SaveQRCodeRequest request) {
         AppUser currentUser = getCurrentUser();
         QRCode qrCode = qrCodeRepository.findByOwnerIdAndId(currentUser.getId(), id)
-                .orElseThrow(QRCodeNotFoundException::new);
+                .orElseThrow(() -> new QRCodeNotFoundException(id));
 
         qrCodeMapper.update(qrCode, request);
 
@@ -85,7 +85,7 @@ public class QRCodeManagementServiceImpl implements QRCodeManagementService {
     public void delete(UUID id) {
         AppUser currentUser = getCurrentUser();
         QRCode qrCode = qrCodeRepository.findByOwnerIdAndId(currentUser.getId(), id)
-                .orElseThrow(QRCodeNotFoundException::new);
+                .orElseThrow(() -> new QRCodeNotFoundException(id));
 
         qrCode.setDeleted(true);
         qrCode.setDeletedAt(LocalDateTime.now());

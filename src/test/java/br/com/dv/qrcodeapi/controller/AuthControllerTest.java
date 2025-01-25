@@ -88,13 +88,15 @@ class AuthControllerTest {
         );
 
         when(appUserService.register(any(RegisterRequest.class)))
-                .thenThrow(new EmailAlreadyExistsException());
+                .thenThrow(new EmailAlreadyExistsException(request.email()));
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error").value("Email already exists"));
+                .andExpect(jsonPath("$.error").value(
+                        String.format("Email '%s' already exists", request.email())
+                ));
     }
 
     @Test

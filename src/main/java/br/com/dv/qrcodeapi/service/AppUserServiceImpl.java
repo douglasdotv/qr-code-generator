@@ -30,7 +30,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
         if (appUserRepository.existsByEmail(request.email())) {
-            throw new EmailAlreadyExistsException();
+            throw new EmailAlreadyExistsException(request.email());
         }
 
         AppUser user = new AppUser();

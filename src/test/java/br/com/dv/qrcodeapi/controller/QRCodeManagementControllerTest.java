@@ -153,12 +153,14 @@ class QRCodeManagementControllerTest {
         UUID id = UUID.randomUUID();
 
         when(qrCodeManagementService.findById(id))
-                .thenThrow(new QRCodeNotFoundException());
+                .thenThrow(new QRCodeNotFoundException(id));
 
         mockMvc.perform(get("/api/qrcode/" + id)
                         .cookie(authCookie))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("QR code not found"));
+                .andExpect(jsonPath("$.error").value(
+                        String.format("QR code with ID '%s' not found", id)
+                ));
 
         verify(qrCodeManagementService).findById(id);
     }
@@ -211,14 +213,16 @@ class QRCodeManagementControllerTest {
     void shouldReturnNotFoundForDeletingNonexistentQRCode() throws Exception {
         UUID id = UUID.randomUUID();
 
-        doThrow(new QRCodeNotFoundException())
+        doThrow(new QRCodeNotFoundException(id))
                 .when(qrCodeManagementService)
                 .delete(id);
 
         mockMvc.perform(delete("/api/qrcode/" + id)
                         .cookie(authCookie))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("QR code not found"));
+                .andExpect(jsonPath("$.error").value(
+                        String.format("QR code with ID '%s' not found", id)
+                ));
 
         verify(qrCodeManagementService).delete(id);
     }
