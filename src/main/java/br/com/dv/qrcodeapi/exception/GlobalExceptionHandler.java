@@ -50,33 +50,15 @@ public class GlobalExceptionHandler {
         return getResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(InvalidImageSizeException.class)
-    public ResponseEntity<ApiError> handleInvalidImageSizeException(InvalidImageSizeException e) {
-        return getResponseEntity(e, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidImageFormatException.class)
-    public ResponseEntity<ApiError> handleInvalidImageFormatException(InvalidImageFormatException e) {
-        return getResponseEntity(e, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidContentException.class)
-    public ResponseEntity<ApiError> handleInvalidContentException(InvalidContentException e) {
-        return getResponseEntity(e, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidCorrectionLevelException.class)
-    public ResponseEntity<ApiError> handleInvalidCorrectionLevelException(InvalidCorrectionLevelException e) {
-        return getResponseEntity(e, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidColorException.class)
-    public ResponseEntity<ApiError> handleInvalidColorException(InvalidColorException e) {
-        return getResponseEntity(e, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidMarginException.class)
-    public ResponseEntity<ApiError> handleInvalidMarginException(InvalidMarginException e) {
+    @ExceptionHandler({
+            InvalidImageSizeException.class,
+            InvalidImageFormatException.class,
+            InvalidContentException.class,
+            InvalidCorrectionLevelException.class,
+            InvalidColorException.class,
+            InvalidMarginException.class
+    })
+    public ResponseEntity<ApiError> handleAllBadRequestExceptions(Exception e) {
         return getResponseEntity(e, HttpStatus.BAD_REQUEST);
     }
 
