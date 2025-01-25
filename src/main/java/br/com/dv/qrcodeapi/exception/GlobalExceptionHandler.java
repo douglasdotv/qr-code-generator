@@ -90,6 +90,11 @@ public class GlobalExceptionHandler {
         return getResponseEntity(e, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(QRCodeNotFoundException.class)
+    public ResponseEntity<ApiError> handleQrCodeNotFoundException(QRCodeNotFoundException e) {
+        return getResponseEntity(e, HttpStatus.NOT_FOUND);
+    }
+
     private ResponseEntity<ApiError> getResponseEntity(Exception e, HttpStatus status) {
         ApiError error = new ApiError(e.getMessage());
         return ResponseEntity.status(status).body(error);

@@ -1,7 +1,7 @@
 package br.com.dv.qrcodeapi.controller;
 
 import br.com.dv.qrcodeapi.dto.ImageResponse;
-import br.com.dv.qrcodeapi.service.QRCodeService;
+import br.com.dv.qrcodeapi.service.QRCodeGenerationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-@RequestMapping("/api/qrcode")
+@RequestMapping("/api/qrcode/generate")
 @RestController
-public class QRCodeController {
+public class QRCodeGenerationController {
 
-    private final QRCodeService qrCodeService;
+    private final QRCodeGenerationService qrCodeGenerationService;
 
-    public QRCodeController(QRCodeService qrCodeService) {
-        this.qrCodeService = qrCodeService;
+    public QRCodeGenerationController(QRCodeGenerationService qrCodeGenerationService) {
+        this.qrCodeGenerationService = qrCodeGenerationService;
     }
 
     @GetMapping
@@ -32,7 +32,7 @@ public class QRCodeController {
             @RequestParam(required = false, defaultValue = "#FFFFFF") String bcolor,
             @RequestParam(required = false, defaultValue = "4") int margin
     ) {
-        ImageResponse response = qrCodeService.generateQRCode(
+        ImageResponse response = qrCodeGenerationService.generateQRCode(
                 content,
                 size,
                 correction,

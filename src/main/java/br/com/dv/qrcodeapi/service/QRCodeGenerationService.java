@@ -2,7 +2,7 @@ package br.com.dv.qrcodeapi.service;
 
 import br.com.dv.qrcodeapi.dto.ImageResponse;
 
-public interface QRCodeService {
+public interface QRCodeGenerationService {
 
     ImageResponse generateQRCode(
             String content,

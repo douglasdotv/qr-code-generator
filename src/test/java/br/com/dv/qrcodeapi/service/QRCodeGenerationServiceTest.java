@@ -19,16 +19,16 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
-class QRCodeServiceTest {
+class QRCodeGenerationServiceTest {
 
     @Mock
     private QRCodeParameterValidator qrCodeParameterValidator;
 
-    private QRCodeService qrCodeService;
+    private QRCodeGenerationService qrCodeGenerationService;
 
     @BeforeEach
     void setUp() {
-        qrCodeService = new QRCodeServiceImpl(qrCodeParameterValidator);
+        qrCodeGenerationService = new QRCodeGenerationServiceImpl(qrCodeParameterValidator);
     }
 
     @Test
@@ -39,7 +39,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 4
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 "content", 250, "L", "png",
                 "#000000", "#FFFFFF", 4
         );
@@ -65,7 +65,7 @@ class QRCodeServiceTest {
                 fcolor, bcolor, margin
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 "content", 250, correction, format,
                 fcolor, bcolor, margin
         );
@@ -83,7 +83,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 4
         );
 
-        assertThrows(InvalidCorrectionLevelException.class, () -> qrCodeService.generateQRCode(
+        assertThrows(InvalidCorrectionLevelException.class, () -> qrCodeGenerationService.generateQRCode(
                 "content", 250, "invalid", "png",
                 "#000000", "#FFFFFF", 4)
         );
@@ -97,7 +97,7 @@ class QRCodeServiceTest {
                 "INVALID", "#FFFFFF", 4
         );
 
-        assertThrows(InvalidColorException.class, () -> qrCodeService.generateQRCode(
+        assertThrows(InvalidColorException.class, () -> qrCodeGenerationService.generateQRCode(
                 "content", 250, "L", "png",
                 "INVALID", "#FFFFFF", 4)
         );
@@ -111,7 +111,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 999
         );
 
-        assertThrows(InvalidMarginException.class, () -> qrCodeService.generateQRCode(
+        assertThrows(InvalidMarginException.class, () -> qrCodeGenerationService.generateQRCode(
                 "content", 250, "L", "png",
                 "#000000", "#FFFFFF", 999)
         );
@@ -125,7 +125,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 4
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 "content", 150, "L", "png",
                 "#000000", "#FFFFFF", 4
         );
@@ -143,7 +143,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 4
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 "content", 350, "L", "png",
                 "#000000", "#FFFFFF", 4
         );
@@ -161,7 +161,7 @@ class QRCodeServiceTest {
                 "BLACK", "WHITE", 4
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 "content", 250, "L", "png",
                 "BLACK", "WHITE", 4
         );
@@ -179,7 +179,7 @@ class QRCodeServiceTest {
                 "#FF0000", "#00FF00", 4
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 "content", 250, "L", "png",
                 "#FF0000", "#00FF00", 4
         );
@@ -197,7 +197,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 0
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 "content", 250, "L", "png",
                 "#000000", "#FFFFFF", 0
         );
@@ -215,7 +215,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 50
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 "content", 250, "L", "png",
                 "#000000", "#FFFFFF", 50
         );
@@ -234,7 +234,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 4
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 longContent, 250, "L", "png",
                 "#000000", "#FFFFFF", 4
         );
@@ -253,7 +253,7 @@ class QRCodeServiceTest {
                 "#000000", "#FFFFFF", 4
         );
 
-        var qrCode = qrCodeService.generateQRCode(
+        var qrCode = qrCodeGenerationService.generateQRCode(
                 specialContent, 250, "L", "png",
                 "#000000", "#FFFFFF", 4
         );

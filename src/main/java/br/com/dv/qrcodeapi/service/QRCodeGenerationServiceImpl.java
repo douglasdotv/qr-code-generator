@@ -23,12 +23,12 @@ import java.util.EnumMap;
 import java.util.Map;
 
 @Service
-public class QRCodeServiceImpl implements QRCodeService {
+public class QRCodeGenerationServiceImpl implements QRCodeGenerationService {
     
     private final QRCodeParameterValidator qrCodeParameterValidator;
     private final QRCodeWriter qrCodeWriter = new QRCodeWriter();
 
-    public QRCodeServiceImpl(QRCodeParameterValidator qrCodeParameterValidator) {
+    public QRCodeGenerationServiceImpl(QRCodeParameterValidator qrCodeParameterValidator) {
         this.qrCodeParameterValidator = qrCodeParameterValidator;
     }
 
