@@ -13,6 +13,7 @@ import {
   Burger,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { IconLayoutDashboard, IconLogout } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import classes from './Navbar.module.css';
@@ -27,31 +28,43 @@ export function Navbar({ isAuthenticated }: Readonly<NavbarProps>) {
 
   const items = isAuthenticated ? (
     <Stack gap="xs">
-      <Button
-        component={Link}
-        href="/dashboard"
-        variant="light"
-        onClick={close}
-      >
-        Dashboard
-      </Button>
-      <Button
-        variant="light"
-        color="red"
-        onClick={() => {
-          close();
-          logout();
-        }}
-      >
-        Logout
-      </Button>
+      <Menu>
+        <Menu.Target>
+          <UnstyledButton>
+            <Avatar size="sm" radius="xl" />
+          </UnstyledButton>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item
+            component={Link}
+            href="/workspace"
+            leftSection={<IconLayoutDashboard size={14} />}
+          >
+            Workspace
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item
+            color="red"
+            leftSection={<IconLogout size={14} />}
+            onClick={logout}
+          >
+            Logout
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </Stack>
   ) : (
     <Stack gap="xs">
-      <Button component={Link} href="/login" variant="light" onClick={close}>
+      <Button component={Link} href="/login" variant="default" onClick={close}>
         Log in
       </Button>
-      <Button component={Link} href="/register" variant="light" onClick={close}>
+      <Button
+        component={Link}
+        href="/register"
+        variant="gradient"
+        gradient={{ from: 'cyan', to: 'indigo' }}
+        onClick={close}
+      >
         Sign up
       </Button>
     </Stack>
@@ -72,32 +85,41 @@ export function Navbar({ isAuthenticated }: Readonly<NavbarProps>) {
 
         <Group gap="xs" className={classes.links}>
           {isAuthenticated ? (
-            <Menu position="bottom-end" width={150}>
+            <Menu position="bottom-end" width={200}>
               <Menu.Target>
                 <UnstyledButton>
                   <Avatar size="sm" radius="xl" />
                 </UnstyledButton>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item component={Link} href="/dashboard">
-                  Dashboard
+                <Menu.Item
+                  component={Link}
+                  href="/workspace"
+                  leftSection={<IconLayoutDashboard size={14} />}
+                >
+                  Workspace
                 </Menu.Item>
-                <Menu.Item onClick={logout} color="red">
+                <Menu.Divider />
+                <Menu.Item
+                  color="red"
+                  leftSection={<IconLogout size={14} />}
+                  onClick={logout}
+                >
                   Logout
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
           ) : (
             <>
-              <Button
-                component={Link}
-                href="/login"
-                variant="default"
-                size="sm"
-              >
+              <Button component={Link} href="/login" variant="default">
                 Log in
               </Button>
-              <Button component={Link} href="/register" size="sm">
+              <Button
+                component={Link}
+                href="/register"
+                variant="gradient"
+                gradient={{ from: 'cyan', to: 'indigo' }}
+              >
                 Sign up
               </Button>
             </>

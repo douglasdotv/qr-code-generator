@@ -21,7 +21,7 @@ export function useAuth() {
         message: 'You are now logged in!',
         color: 'green',
       });
-      router.push('/dashboard');
+      router.push('/workspace');
       router.refresh();
     } catch (error) {
       notifications.show({

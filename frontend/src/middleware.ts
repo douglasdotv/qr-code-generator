@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const protectedRoutes = ['/dashboard'];
+const protectedRoutes = ['/workspace'];
 const publicRoutes = ['/login', '/register'];
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
-
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route),
   );
@@ -17,7 +16,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (isPublic && token) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/workspace', request.url));
   }
 
   return NextResponse.next();
